@@ -10,16 +10,21 @@ const App = () => {
     try {
 
       const connection = new HubConnectionBuilder()
-        .withUrl("https://localhost:7280/ChatHub")
+        .withUrl("https://localhost:7203/TriviaHub")
         .configureLogging(LogLevel.Information)
         .build();
 
       connection.on("ReceiveMessage", (user, message) => {
-        console.log(message);
+        console.log(user+" "+message);
       });
       await connection.start();
-      await connection.invoke("JoinRoom", { user, subject });
-      setConnection(connection);
+      try {
+         await connection.invoke("SendMessage", user, subject);
+         setConnection(connection);
+      } catch (err) {
+        console.error(err);
+      }
+      
 
     } catch (e) {
       console.log(e)
