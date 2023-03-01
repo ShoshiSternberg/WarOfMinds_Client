@@ -6,6 +6,7 @@ import Login from './components/login';
 import Game from './components/Game';
 const App = () => {
   const [connection, setConnection] = useState();
+  const [res, setRes] = useState();
   const joinGame = async (user, subject) => {
     try {
 
@@ -15,31 +16,31 @@ const App = () => {
         .build();
 
       connection.on("ReceiveMessage", (user, message) => {
-        console.log(user+" "+message);
+        console.log(user + " : " + message);
+        setRes(message);
       });
       await connection.start();
-      try {
-         await connection.invoke("SendMessage", user, subject);
-         setConnection(connection);
-      } catch (err) {
-        console.error(err);
-      }
-      
+      console.log(connection)
+      await connection.invoke("JoinGameAsync", user, subject);
+      setConnection(connection);
 
     } catch (e) {
       console.log(e)
     }
   }
-  return <div className='app'>
-  <h2>world of minds</h2>
-  {
-    !connection ?
-      <Login joinGame={joinGame} />
-      :
-      <Game/>
-    }
 
-    </div>
-  }
   
-  export default App;
+
+
+  return <div className='app'>
+    <h2>world of minds</h2>
+    {
+      !connection ?
+        <Login joinGame={joinGame} />
+        :
+        <Game  res={res}/>
+    }
+  </div>
+}
+
+export default App;
