@@ -1,8 +1,9 @@
-const Game=(res)=>{
-    return<div>
-        wellcome to the game!!!!       
-        <p>Received message: {res}</p>
-    </div>
-}
-
-export default Game;
+const Game = (props) => {
+    return (
+      <div>
+        Welcome to the game!!!!
+        <p>Received message: {props.res}</p>
+      </div>
+    );
+  };
+  export default Game;
