@@ -9,7 +9,9 @@ const App = () => {
   const [connection, setConnection] = useState();
   const [res, setRes] = useState();
   const [question, setQuestion] = useState();
-
+  const [qTime,setQTime]=useState();
+  const [answer,setAnswer]=useState();
+  const [winnerForQuestion,setWinnerForQuestion]=useState();
   const joinGame = async (user, subject) => {
     try {
 
@@ -22,10 +24,18 @@ const App = () => {
         console.log(user + " : " + message);
         setRes(message);
       });
+      
       connection.on('ReceiveQuestion', (question) => {
+        setQTime()// השעה הנוכחית של קבלת השאלה
         console.log('Received question: ', question);
         setQuestion(question);
       });
+
+      connection.on("ReceiveAnswerAndWinner",(answer,winner)=>{
+        console.log('right answer:',answer,winner,' answered correctly first');
+        setAnswer(answer);
+        setWinnerForQuestion(winner);
+      })
       await connection.start();
       console.log(connection);
 
@@ -36,10 +46,11 @@ const App = () => {
       console.log(e);
     }
   };
-
-const sendAnswer=async (answer)=>{
+//useRef לכל המשתנים שצריך לעדכן מיד כשהם מתעדכנים-
+//שאלה, מנצח
+const sendAnswer=async (qNum,answer,time)=>{
      if (!connection)return;
-     connection.invoke("sendAnswer",answer);
+     connection.invoke("GetAnswerAsync",qNum, answer, time);
 };
   return (
     <div className='app'>
@@ -47,7 +58,7 @@ const sendAnswer=async (answer)=>{
       {!connection ? (
         <Login joinGame={joinGame} />
       ) : (
-        <Game res={res} question={question} sendAnswer={sendAnswer}/>
+        <Game res={res} question={question} qTime={qTime} answer={answer} winnerForQuestion={winnerForQuestion} sendAnswer={sendAnswer} />
       )}
     </div>
   );
