@@ -48,9 +48,9 @@ const App = () => {
   };
 //useRef לכל המשתנים שצריך לעדכן מיד כשהם מתעדכנים-
 //שאלה, מנצח
-const sendAnswer=async (qNum,answer,time)=>{
+const sendAnswer=async (answer,time)=>{
      if (!connection)return;
-     connection.invoke("GetAnswerAsync",qNum, answer, time);
+     connection.invoke("GetAnswerAsync",question.questionId, answer, time);
 };
   return (
     <div className='app'>

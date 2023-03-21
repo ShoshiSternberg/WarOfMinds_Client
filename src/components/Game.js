@@ -10,7 +10,7 @@ const Game = ({sendAnswer},props) => {
       onSubmit={e => {
         setATime()//את העשה הנוכחית- זמן המענה
         e.preventDefault();
-        sendAnswer(props.question.qNum,answer,qTime-aTime);
+        sendAnswer(answer,2);
       }}>
 
       <div>
@@ -18,7 +18,7 @@ const Game = ({sendAnswer},props) => {
         <p>Question: {props.question}</p>
       </div>
       <Form.Group>
-        <Form.Control placeholder="answer" onChange={e => setAnswer(parseInt(e.target.value))} />
+        <Form.Control placeholder="answer" onChange={e => setAnswer(e.target.value)} />
       </Form.Group>
       <Button variant="success" type='submit' disabled={!answer}>send answer</Button>
     </Form>
