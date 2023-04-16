@@ -1,13 +1,16 @@
 
+import { useEffect } from "react";
 import { useState } from "react";
 const { Form, Button } = require("react-bootstrap")
 const Game = ({sendAnswer},props) => {
+
    const [answer, setAnswer] = useState();
    const [qTime,setQTime]=useState(props.qTime);
    const [aTime,setATime]=useState();
   return (
     <Form
       onSubmit={e => {
+        console.log("------------");
         setATime()//את העשה הנוכחית- זמן המענה
         e.preventDefault();
         sendAnswer(answer,2);
