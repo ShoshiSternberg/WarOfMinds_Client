@@ -63,10 +63,9 @@ const HomePage = () => {
     <>
     <div className={`App ${isLogged ? 'enabled' : 'disabled'}`}>
       {isFormVisible && (
-        <div className="form-container">         
-          
+        <div className="form-container">
             {/* Input fields and buttons for login/register */}
-            <Login_Register ChangeFormVisible={ChangeFormVisible} />      
+            <Login_Register ChangeFormVisible={ChangeFormVisible} />     
           
         </div>
       )}

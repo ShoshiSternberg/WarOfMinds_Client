@@ -22,51 +22,52 @@ const Game = () => {
   const [players, setPlayers] = useState([]);
   const [manager,setManager]=useState(false);
   let navigate = useNavigate();
-  useEffect(() => {
-    const startConnection = async () => {
-      try {
-        connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
-        connection.on('ReceiveMessage', (user, message) => {
-          console.log(user + ' : ' + message);
-          setRes(message);
-          setTogame("Questions");
-        });
+  const startConnection = async () => {
+    try {
+      connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
+      connection.on('ReceiveMessage', (user, message) => {
+        console.log(user + ' : ' + message);
+        setRes(message);
+        setTogame("Questions");
+      });
 
-        //הצטרפות לחדר המתנה- מעבר לחדר וקבלת הממתינים
-        connection.on('JoinWaitingRoom', (Waitings) => {
-          setPlayers(Waitings);
-          setTogame("waitingRoom");   
-          console.log("watings: ",Waitings);       
-        });
+      //הצטרפות לחדר המתנה- מעבר לחדר וקבלת הממתינים
+      connection.on('JoinWaitingRoom', (Waitings) => {
+        setPlayers(Waitings);
+        setTogame("waitingRoom");   
+        console.log("watings: ",Waitings);       
+      });
 
-        //הצטרפות שחקן אחר לחדר או למשחק
-        connection.on('PlayerJoined', (newPlayer) => {          
-          setPlayers((prevWaitings) => [...prevWaitings, newPlayer]);          
-          console.log("player joined: ",newPlayer);   
-        });
+      //הצטרפות שחקן אחר לחדר או למשחק
+      connection.on('PlayerJoined', (newPlayer) => {          
+        setPlayers((prevWaitings) => [...prevWaitings, newPlayer]);          
+        console.log("player joined: ",newPlayer);   
+      });
 
-        connection.on('ReceiveQuestion', (question) => {
-          setQTime(); // השעה הנוכחית של קבלת השאלה
-          console.log('Received question: ', question);
-          setQuestion(question);
-        });
+      connection.on('ReceiveQuestion', (question) => {
+        setQTime(); // השעה הנוכחית של קבלת השאלה
+        console.log('Received question: ', question);
+        setQuestion(question);
+      });
 
-        connection.on('ReceiveAnswerAndWinner', (answer, winner) => {
-          console.log('right answer:', answer);
-          setAnswer(answer);
-          setWinnerForQuestion(winner);
-        });
+      connection.on('ReceiveAnswerAndWinner', (answer, winner) => {
+        console.log('right answer:', answer);
+        setAnswer(answer);
+        setWinnerForQuestion(winner);
+      });
 
-        await connection.start();
-        console.log(connection);
+      await connection.start();
+      console.log(connection);
 
-      } catch (e) {
-        console.log(e);
-      }
-    };
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {    
     startConnection();
-  }, [connection]);
+  }, []);
   let user = JSON.parse(sessionStorage.user);
+  
   const startGame = async () => {
     await connection.invoke("StartGameByManager");
     setManager(true);
@@ -84,6 +85,15 @@ const Game = () => {
   const sendAnswer = async (answer, time) => {
     await connection.invoke("GetAnswerAsync", question.questionId, answer, time);
   }
+
+  const closeConnection = async () => {
+    try {
+      await connection.stop();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <div className='app'>
       <h2>war of minds</h2>
