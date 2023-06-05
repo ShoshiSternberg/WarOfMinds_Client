@@ -20,6 +20,7 @@ const Game = () => {
   const [answer, setAnswer] = useState();
   const [winnerForQuestion, setWinnerForQuestion] = useState();
   const [players, setPlayers] = useState([]);
+  const [manager,setManager]=useState(false);
   let navigate = useNavigate();
   useEffect(() => {
     const startConnection = async () => {
@@ -39,8 +40,8 @@ const Game = () => {
         });
 
         //הצטרפות שחקן אחר לחדר או למשחק
-        connection.on('PlayerJoined', (newPlayer) => {
-          setPlayers((prevWaitings) => [...prevWaitings, newPlayer]);
+        connection.on('PlayerJoined', (newPlayer) => {          
+          setPlayers((prevWaitings) => [...prevWaitings, newPlayer]);          
           console.log("player joined: ",newPlayer);   
         });
 
@@ -68,6 +69,7 @@ const Game = () => {
   let user = JSON.parse(sessionStorage.user);
   const startGame = async () => {
     await connection.invoke("StartGameByManager");
+    setManager(true);
   }
 
   const joinGame = async (subject) => {
@@ -92,7 +94,7 @@ const Game = () => {
       ) : toGame == "Questions" ?
         <Question res={res} question={question} qTime={qTime} answer={answer} winnerForQuestion={winnerForQuestion} sendAnswer={sendAnswer} startGame={startGame} />
 
-        : <WaitingRoom players={players} />}
+        : <WaitingRoom players={players} manager={manager} startGame={startGame}/>}
     </div>
   );
 };

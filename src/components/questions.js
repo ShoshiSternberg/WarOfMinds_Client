@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState } from 'react';
-
+import React, { useEffect, useRef, useState } from 'react';
+import CountdownTimer from './Timer';
 // const Question = ({ question }) => {
 //     const [selectedAnswer, setSelectedAnswer] = useState(null);
 //     useEffect((question) => {
@@ -28,16 +28,19 @@ import React, {useEffect, useRef, useState } from 'react';
 //     );
 // };import React, { useState, useEffect } from "react";
 
-function Question({question}) {
-    const [answers, setAnswers] = useState([]);
+function Question({ question }) {
+  const [answers, setAnswers] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [questionChange, setQuestionChange] = useState(false);
+
+  useEffect(() => {
+    setQuestionChange(true);
+  }, [question]);
 
   if (!question) {
     // Display a loading message or a placeholder while the question is being received
     return <div>Loading...</div>;
   }
-
-
   function handleAnswerClick(answer) {
     setSelectedAnswer(answer);
   }
@@ -56,18 +59,26 @@ function Question({question}) {
     //   {selectedAnswer && <p>Selected answer: {selectedAnswer}</p>}
     // </div>
     <div>
-    <h3 id="question">{question.question}</h3>
-    <div className="answer-grid">
-      {question.answers.map((answer, index) => (
-        <button
-          key={index}
-          onClick={() => handleAnswerClick(answer)}
-          disabled={selectedAnswer !== null}>
-          {answer}
-        </button>
-      ))}
+      <CountdownTimer
+        seconds={15} // Set the desired timer duration
+        size={80} // Set the desired size
+        strokeBgColor="black" // Set the desired background color
+        strokeColor="lightblue" // Set the desired stroke color
+        strokeWidth={3} // Set the desired stroke width
+        restart={questionChange} // Pass the questionChange state as a prop
+      />
+      <h3 id="question">{question.question}</h3>
+      <div className="answer-grid">
+        {question.answers.map((answer, index) => (
+          <button
+            key={index}
+            onClick={() => handleAnswerClick(answer)}
+            disabled={selectedAnswer !== null}>
+            {answer}
+          </button>
+        ))}
+      </div>
     </div>
-  </div>
   );
 }
 

@@ -3,7 +3,7 @@ import '../App.css';
 import { Link, Outlet } from 'react-router-dom';
 
 
-function WaitingRoom({players}) {
+function WaitingRoom({players,manager,startGame}) {
     return (
         <>
             <div>waiting room!</div>
@@ -14,6 +14,10 @@ function WaitingRoom({players}) {
                     }</li>
                 ))}
             </ul>
+
+            {
+                manager&&<button onClick={startGame} >start game (allow to manager only)</button>
+            }
         </>
     )
 }
