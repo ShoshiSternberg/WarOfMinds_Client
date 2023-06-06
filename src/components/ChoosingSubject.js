@@ -2,24 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
 const { Form, Button } = require("react-bootstrap")
-const ChoosingSubject = ({ joinGame, createGame, waitGame }) => {
+const ChoosingSubject = ({ joinGame, createGame, waitGame ,closeConnection}) => {
     const [subjects, setSubjects] = useState([]);
     const [subject, setSubject] = useState();
     useEffect(() => {
         axios.get(`https://localhost:7203/api/Subject`)
-            .then(res => {
-
-                console.log(res.data);
+            .then(res => {                
                 setSubjects(res.data);
+                
             })
 
     }, [])
 
-    useEffect(() => {
-        console.log(subject); // Log the updated value of subject
-    }, [subject]);
     return (
         <>
+           <button onClick={closeConnection} >exit</button>
             <ul className='subjects'>
                 {subjects.map((element, index) => (
                     <li key={index}>{

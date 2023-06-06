@@ -42,6 +42,10 @@
   margin: auto;
   
 }
+
+.selected-answer {
+  background-color: yellow; /* Set your desired background color */
+}
 .content{
   width: 100%;
   margin:auto;

@@ -13,10 +13,12 @@ import HomePage from './components/HomePage';
 import Login_Register from './components/Login_Register';
 import Game from './components/Game';
 import ChoosingSubject from './components/ChoosingSubject';
+import WaitingRoom from './components/WaitingRoom';
+import Question from './components/questions';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  //<React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<App />}>
@@ -24,8 +26,12 @@ root.render(
             {/* <Route path='/HomePage/Login_Register' element={<Login_Register/>}></Route> */}
           </Route>
 
-          <Route path='/Game' element={<Game />}></Route>
-          <Route path='/ChoosingSubject' element={<ChoosingSubject />}></Route>
+          <Route path='/Game' element={<Game />}>
+            <Route path='/Game/ChoosingSubject' element={<ChoosingSubject />}></Route>
+            <Route path='/Game/WaitingRoom' element={<WaitingRoom/>}></Route>
+            <Route path='/Game/Question' element={<Question/>}></Route>
+          </Route>
+          
           <Route path='/MyHistory' element={<MyHistory />}></Route>
           <Route path='/MyProfile' element={<MyProfile />}></Route>
 
@@ -34,7 +40,7 @@ root.render(
       </Routes>
     </BrowserRouter>
 
-  </React.StrictMode>
+ // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

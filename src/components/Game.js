@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import Login from './login';
 import Question from './questions';
 import ChoosingSubject from './ChoosingSubject';
-import { useNavigate } from 'react-router';
+import {Outlet, useNavigate } from 'react-router';
+import Winners from './Winners';
 import WaitingRoom from './WaitingRoom';
 const Game = () => {
   const [connection, setConnection] = useState(new HubConnectionBuilder()
@@ -17,11 +18,14 @@ const Game = () => {
   const [question, setQuestion] = useState(null);
   const [toGame, setTogame] = useState(false)
   const [qTime, setQTime] = useState();
-  const [answer, setAnswer] = useState();
-  const [winnerForQuestion, setWinnerForQuestion] = useState();
+  const [rightAnswer, setRightAnswer] = useState(null);
+  const [winnerForQuestion, setWinnerForQuestion] = useState(null);
+  const [playerAnswer,setPlayerAnswer]=useState(null);
   const [players, setPlayers] = useState([]);
-  const [manager,setManager]=useState(false);
+  const [manager, setManager] = useState(false);
+  const [winners,setWinners]=useState([]);
   let navigate = useNavigate();
+
   const startConnection = async () => {
     try {
       connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
@@ -34,26 +38,40 @@ const Game = () => {
       //הצטרפות לחדר המתנה- מעבר לחדר וקבלת הממתינים
       connection.on('JoinWaitingRoom', (Waitings) => {
         setPlayers(Waitings);
-        setTogame("waitingRoom");   
-        console.log("watings: ",Waitings);       
-      });
+        setTogame("waitingRoom");
+        console.log("watings: ", Waitings);
+        });
 
       //הצטרפות שחקן אחר לחדר או למשחק
-      connection.on('PlayerJoined', (newPlayer) => {          
-        setPlayers((prevWaitings) => [...prevWaitings, newPlayer]);          
-        console.log("player joined: ",newPlayer);   
+      connection.on('PlayerJoined', (newPlayer) => {
+        setPlayers((prevWaitings) => [...prevWaitings, newPlayer]);
+        console.log("player joined: ", newPlayer);
       });
 
       connection.on('ReceiveQuestion', (question) => {
         setQTime(); // השעה הנוכחית של קבלת השאלה
         console.log('Received question: ', question);
+        setTogame("Questions");
+        setRightAnswer(null);
+        setWinnerForQuestion(null);
+        setPlayerAnswer(null);
         setQuestion(question);
       });
 
       connection.on('ReceiveAnswerAndWinner', (answer, winner) => {
         console.log('right answer:', answer);
-        setAnswer(answer);
+        setRightAnswer(answer);
         setWinnerForQuestion(winner);
+      });
+      //בכל פעם שמישהו עונה כולם מקבלים הודעה
+      connection.on('playeranswered', (playerAnswered) => {
+        console.log('player :', playerAnswered," already answered!");
+        setPlayerAnswer(playerAnswered);
+      });
+      //סיום המשחק- קבלת המנצחים
+      connection.on('winners', (winners) => {
+        console.log("finnal winners: ",winners);
+        setWinners(winners);
       });
 
       await connection.start();
@@ -63,25 +81,28 @@ const Game = () => {
       console.log(e);
     }
   };
-  useEffect(() => {    
+  useEffect(() => {
     startConnection();
   }, []);
   let user = JSON.parse(sessionStorage.user);
-  
+
   const startGame = async () => {
-    await connection.invoke("StartGameByManager");
-    setManager(true);
+    await connection.invoke("StartGameByManager");    
   }
 
   const joinGame = async (subject) => {
     await connection.invoke("JoinExistingGameAsync", user.playerID, subject);
   }
+
   const createGame = async (subject) => {
+    setManager(true);
     await connection.invoke("CreateNewGameAsync", user.playerID, subject);
   }
+
   const waitGame = async (subject) => {
     await connection.invoke("JoinWaitingRoomAsync", user.playerID, subject);
   }
+
   const sendAnswer = async (answer, time) => {
     await connection.invoke("GetAnswerAsync", question.questionId, answer, time);
   }
@@ -97,14 +118,27 @@ const Game = () => {
   return (
     <div className='app'>
       <h2>war of minds</h2>
-      {toGame == "" ? (
+      {/* <Outlet></Outlet> */}
+      {toGame == "" ? 
         <div className='window'>
           <ChoosingSubject joinGame={joinGame} createGame={createGame} waitGame={waitGame} />
         </div>
-      ) : toGame == "Questions" ?
-        <Question res={res} question={question} qTime={qTime} answer={answer} winnerForQuestion={winnerForQuestion} sendAnswer={sendAnswer} startGame={startGame} />
+       : toGame == "Questions" ?
+        <Question
+         res={res} 
+         question={question} 
+         playerAnswer={playerAnswer}
+         //qTime={qTime} 
+         rightAnswer={rightAnswer}          
+         winnerForQuestion={winnerForQuestion} 
+         sendAnswer={sendAnswer} 
+         //startGame={startGame} 
+         closeConnection={closeConnection} 
+         />
 
-        : <WaitingRoom players={players} manager={manager} startGame={startGame}/>}
+        :toGame=="waitingRoom" ?<WaitingRoom players={players} manager={manager} startGame={startGame} closeConnection={closeConnection} />:
+        <Winners winners={winners}/>
+      }
     </div>
   );
 };

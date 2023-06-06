@@ -28,21 +28,40 @@ import CountdownTimer from './Timer';
 //     );
 // };import React, { useState, useEffect } from "react";
 
-function Question({ question }) {
+function Question({ question, closeConnection, sendAnswer, rightAnswer ,playerAnswer,winnerForQuestion}) {
   const [answers, setAnswers] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [questionChange, setQuestionChange] = useState(false);
+  const startTimeRef = useRef();
+  const [timeToAnswer, setTimeToAnswer] = useState(0);
 
   useEffect(() => {
     setQuestionChange(true);
+    setSelectedAnswer(null);
+    startTimeRef.current = Date.now(); // Store the current time when the question changes
   }, [question]);
+
+  useEffect(() => {
+
+  }, [rightAnswer]);
+
+  // useEffect(
+  //   ()=>{
+
+  //   },[playerAnswer]
+  // )
 
   if (!question) {
     // Display a loading message or a placeholder while the question is being received
     return <div>Loading...</div>;
   }
+
   function handleAnswerClick(answer) {
     setSelectedAnswer(answer);
+    const endTime = Date.now(); // Get the current time when the answer is clicked
+    const timeDifference = Math.floor((endTime - startTimeRef.current) / 1000); // Calculate the time difference in seconds
+    setTimeToAnswer(timeDifference);
+    sendAnswer(answer, timeDifference);
   }
 
   return (
@@ -59,25 +78,35 @@ function Question({ question }) {
     //   {selectedAnswer && <p>Selected answer: {selectedAnswer}</p>}
     // </div>
     <div>
-      <CountdownTimer
+
+      <button onClick={closeConnection} >exit</button>
+      {/* <CountdownTimer
         seconds={15} // Set the desired timer duration
         size={80} // Set the desired size
         strokeBgColor="black" // Set the desired background color
         strokeColor="lightblue" // Set the desired stroke color
         strokeWidth={3} // Set the desired stroke width
         restart={questionChange} // Pass the questionChange state as a prop
-      />
+      /> */}
       <h3 id="question">{question.question}</h3>
       <div className="answer-grid">
-        {question.answers.map((answer, index) => (
-          <button
-            key={index}
-            onClick={() => handleAnswerClick(answer)}
-            disabled={selectedAnswer !== null}>
-            {answer}
-          </button>
-        ))}
+        {question.incorrect_answers
+          .map((answer, index) => (
+            <button className={selectedAnswer === answer ? 'selected-answer' : ''}
+              key={index}
+              onClick={(e) => handleAnswerClick(e.target.value)}
+              disabled={selectedAnswer !== null} value={answer}>
+              {answer}
+            </button>
+          ))}
       </div>
+      <span>{
+      (winnerForQuestion)!=null?<div>{winnerForQuestion} answered correctly first!!!!</div>:
+      (playerAnswer)!=null?<div>{playerAnswer} already answered!</div>:
+      <></>
+           
+    
+    }</span>
     </div>
   );
 }
