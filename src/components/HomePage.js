@@ -65,7 +65,7 @@ const HomePage = () => {
       {isFormVisible && (
         <div className="form-container">
             {/* Input fields and buttons for login/register */}
-            <Login_Register ChangeFormVisible={ChangeFormVisible} />     
+            <Login_Register ChangeFormVisible={ChangeFormVisible} setIsLogged={setIsLogged}/>     
           
         </div>
       )}

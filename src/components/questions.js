@@ -58,8 +58,8 @@ function Question({ question, closeConnection, sendAnswer, rightAnswer ,playerAn
 
   function handleAnswerClick(answer) {
     setSelectedAnswer(answer);
-    const endTime = Date.now(); // Get the current time when the answer is clicked
-    const timeDifference = Math.floor((endTime - startTimeRef.current) / 1000); // Calculate the time difference in seconds
+    const endTime = Date.now(); 
+    const timeDifference = Math.floor((endTime - startTimeRef.current) / 1000); 
     setTimeToAnswer(timeDifference);
     sendAnswer(answer, timeDifference);
   }
@@ -101,7 +101,7 @@ function Question({ question, closeConnection, sendAnswer, rightAnswer ,playerAn
           ))}
       </div>
       <span>{
-      (winnerForQuestion)!=null?<div>{winnerForQuestion} answered correctly first!!!!</div>:
+      (winnerForQuestion)!=null?<div>{winnerForQuestion=="nobody"?"nobody answerd correctly :(":(winnerForQuestion+ " answered correctly first!!!!")}</div>:
       (playerAnswer)!=null?<div>{playerAnswer} already answered!</div>:
       <></>
            

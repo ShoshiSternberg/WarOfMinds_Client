@@ -1,17 +1,19 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
-const Winners=()=> {
+const Winners=({winners})=> {
   return (
     <div>
-      <button>winner
-      <Link to={{ pathname: "/Game", state: { value: 1 } }}>to game</Link>
-      </button>
-      <header/>
-      <Outlet/>
-      <footer/>
-    </div>
-    
+      <h3>---winners---</h3>
+        {winners
+          .map((index,winner) => (
+            <button 
+              key={index}>
+              {winner}
+            </button>
+          ))
+      }
+    </div>   
 
   );
 }

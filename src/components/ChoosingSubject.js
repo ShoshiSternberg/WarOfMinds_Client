@@ -8,8 +8,7 @@ const ChoosingSubject = ({ joinGame, createGame, waitGame ,closeConnection}) => 
     useEffect(() => {
         axios.get(`https://localhost:7203/api/Subject`)
             .then(res => {                
-                setSubjects(res.data);
-                
+                setSubjects(res.data);                
             })
 
     }, [])

@@ -36,10 +36,18 @@ const Game = () => {
       });
 
       //הצטרפות לחדר המתנה- מעבר לחדר וקבלת הממתינים
-      connection.on('JoinWaitingRoom', (Waitings) => {
+      connection.on('JoinWaitingRoom', (manager1,Waitings) => {
+        setManager(manager1);
         setPlayers(Waitings);
         setTogame("waitingRoom");
         console.log("watings: ", Waitings);
+        });
+
+        //הצטרפות למשחק פעיל- מעבר למשחק וקבלת השחקנים
+      connection.on('JoinGame', (players1) => {
+        setPlayers(players1);
+        setTogame("Questions");
+        console.log("players: ", players1);
         });
 
       //הצטרפות שחקן אחר לחדר או למשחק
@@ -69,8 +77,9 @@ const Game = () => {
         setPlayerAnswer(playerAnswered);
       });
       //סיום המשחק- קבלת המנצחים
-      connection.on('winners', (winners) => {
+      connection.on('ReceiveWinnerAndGameEnd', (winners) => {
         console.log("finnal winners: ",winners);
+        setTogame("winners");
         setWinners(winners);
       });
 
@@ -95,7 +104,7 @@ const Game = () => {
   }
 
   const createGame = async (subject) => {
-    setManager(true);
+    //setManager(true);
     await connection.invoke("CreateNewGameAsync", user.playerID, subject);
   }
 
