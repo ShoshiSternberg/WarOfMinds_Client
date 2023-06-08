@@ -8,6 +8,7 @@ import ChoosingSubject from './ChoosingSubject';
 import {Outlet, useNavigate } from 'react-router';
 import Winners from './Winners';
 import WaitingRoom from './WaitingRoom';
+import TopPlayers from './TopPlayers';
 const Game = () => {
   const [connection, setConnection] = useState(new HubConnectionBuilder()
     .withUrl("https://localhost:7203/TriviaHub")
@@ -24,6 +25,7 @@ const Game = () => {
   const [players, setPlayers] = useState([]);
   const [manager, setManager] = useState(false);
   const [winners,setWinners]=useState([]);
+  const [Top10Players,setTop10Players]=useState([]);
   let navigate = useNavigate();
 
   const startConnection = async () => {
@@ -71,16 +73,23 @@ const Game = () => {
         setRightAnswer(answer);
         setWinnerForQuestion(winner);
       });
+
+      connection.on('TopPlayers', (TopPlayers) => {
+        console.log('Top players:', TopPlayers);
+        setTop10Players(TopPlayers)
+        setTogame("TopPlayers");
+      });
       //בכל פעם שמישהו עונה כולם מקבלים הודעה
       connection.on('playeranswered', (playerAnswered) => {
         console.log('player :', playerAnswered," already answered!");
         setPlayerAnswer(playerAnswered);
       });
+
       //סיום המשחק- קבלת המנצחים
-      connection.on('ReceiveWinnerAndGameEnd', (winners) => {
-        console.log("finnal winners: ",winners);
+      connection.on('ReceiveWinnerAndGameEnd', (GameResults) => {
+        console.log("finnal winners: ",GameResults);
         setTogame("winners");
-        setWinners(winners);
+        setWinners(GameResults.playersSortedByScore);
       });
 
       await connection.start();
@@ -146,7 +155,7 @@ const Game = () => {
          />
 
         :toGame=="waitingRoom" ?<WaitingRoom players={players} manager={manager} startGame={startGame} closeConnection={closeConnection} />:
-        <Winners winners={winners}/>
+        toGame=="Winners"?<Winners winners={winners}/>:toGame=="TopPlayers"?<TopPlayers players={Top10Players}/>:"game component"
       }
     </div>
   );

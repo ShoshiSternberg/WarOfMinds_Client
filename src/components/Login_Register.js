@@ -20,7 +20,7 @@ import {
     from 'mdb-react-ui-kit';
 import { Form } from 'react-bootstrap';
 import { useState } from 'react';
-const Login_Register = ({ChangeFormVisible}) => {
+const Login_Register = ({ChangeFormVisible,setIsLogged}) => {
     const [name, setName] = useState();
     const [password, setPassword] = useState();
     const [email, setEmail] = useState();
@@ -43,11 +43,12 @@ const Login_Register = ({ChangeFormVisible}) => {
                 console.log(res.data);
                 sessionStorage.setItem('user', JSON.stringify(res.data));
                 ChangeFormVisible(false);
+                setIsLogged(true)
 
             })
             .catch(err => {
                 console.log(err);
-                
+                setIsLogged(false);
             })
     }
 
@@ -166,7 +167,7 @@ const Login_Register = ({ChangeFormVisible}) => {
 
                     <MDBInput wrapperClass='mb-4' label='Name' className='form1' type='text' onChange={e => setName(e.target.value)} />
                     <MDBInput wrapperClass='mb-4' label='Email' className='form1' type='email' onChange={e => setEmail(e.target.value)} />
-                    <MDBInput wrapperClass='mb-4' label='Password' className='form1' type='password' onChange={e => setEmail(e.target.value)} />
+                    <MDBInput wrapperClass='mb-4' label='Password' className='form1' type='password' onChange={e => setPassword(e.target.value)} />
 
                     <div className='d-flex justify-content-center mb-4'>
                         <MDBCheckbox name='flexCheck' className='flexCheckDefault' label='I have read and agree to the terms' />
