@@ -2,7 +2,6 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { useEffect, useState } from 'react';
-import Login from './login';
 import Question from './questions';
 import ChoosingSubject from './ChoosingSubject';
 import {Outlet, useNavigate } from 'react-router';
@@ -26,6 +25,7 @@ const Game = () => {
   const [manager, setManager] = useState(false);
   const [winners,setWinners]=useState([]);
   const [Top10Players,setTop10Players]=useState([]);
+  const [percentage,setPrecentage]=useState(0);
   let navigate = useNavigate();
 
   const startConnection = async () => {
@@ -79,11 +79,14 @@ const Game = () => {
         setTop10Players(TopPlayers)
         setTogame("TopPlayers");
       });
+
       //בכל פעם שמישהו עונה כולם מקבלים הודעה
-      connection.on('playeranswered', (playerAnswered) => {
+      connection.on('playeranswered', (playerAnswered,percentage) => {
         console.log('player :', playerAnswered," already answered!");
         setPlayerAnswer(playerAnswered);
+        setPrecentage(percentage);
       });
+      
 
       //סיום המשחק- קבלת המנצחים
       connection.on('ReceiveWinnerAndGameEnd', (GameResults) => {
@@ -113,7 +116,6 @@ const Game = () => {
   }
 
   const createGame = async (subject) => {
-    //setManager(true);
     await connection.invoke("CreateNewGameAsync", user.playerID, subject);
   }
 
@@ -151,7 +153,8 @@ const Game = () => {
          winnerForQuestion={winnerForQuestion} 
          sendAnswer={sendAnswer} 
          //startGame={startGame} 
-         closeConnection={closeConnection} 
+         closeConnection={closeConnection}
+         percentage={percentage} 
          />
 
         :toGame=="waitingRoom" ?<WaitingRoom players={players} manager={manager} startGame={startGame} closeConnection={closeConnection} />:

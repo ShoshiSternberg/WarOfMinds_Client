@@ -10,7 +10,6 @@ import App from './App';
 import MyHistory from './components/MyHistory';
 import MyProfile from './components/MyProfile';
 import HomePage from './components/HomePage';
-import Login_Register from './components/Login_Register';
 import Game from './components/Game';
 import ChoosingSubject from './components/ChoosingSubject';
 import WaitingRoom from './components/WaitingRoom';

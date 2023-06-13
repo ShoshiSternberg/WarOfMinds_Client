@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './App.css';
 import { Link, Outlet } from 'react-router-dom';
 
-
 function App() {
   const [isNavbarOpen, setIsNavbarOpen] = useState(true);
 
@@ -27,7 +26,8 @@ function App() {
       </div>
       
 
-      <div className="content">
+      <div className="content" >
+      
         <Outlet>
           
         </Outlet>

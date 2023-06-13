@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Outlet, useSearchParams } from 'react-router-dom';
 
-const GameResults=({winners})=> {
+const GameResults=({winners,preRating,UpdatedRating})=> {
     const [player,setPlayer]=useState();
     useEffect(() => {
         axios.get(`https://localhost:7203/api/Player`)
@@ -15,7 +15,25 @@ const GameResults=({winners})=> {
     <div>
       <h3>Game Results</h3>
         <div>
-            <span>new rating :{player.EloRating}</span>
+          <div className='TopPlayers winners'>
+          <ul className='subjects'>
+          {winners.map((element, index) => (
+            <li key={index}>
+              <button
+                onClick={e => {
+                  setSubject(parseInt(e.target.value));
+                }}
+                className='winner'
+                
+              >
+                {element}
+              </button>
+            </li>
+          ))}
+          </ul>
+          </div>
+            <span>pre rating :{preRating}</span>
+            <span>updated rating: {UpdatedRating}</span>
             
         </div>
     </div>   

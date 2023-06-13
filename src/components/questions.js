@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CountdownTimer from './Timer';
+import ProgressBar from './progressBar';
 
-function Question({ question, closeConnection, sendAnswer, rightAnswer ,playerAnswer,winnerForQuestion}) {
+function Question({ question, closeConnection, sendAnswer, rightAnswer, playerAnswer, winnerForQuestion, percentage }) {
   const [answers, setAnswers] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [questionChange, setQuestionChange] = useState(false);
   const startTimeRef = useRef();
   const [timeToAnswer, setTimeToAnswer] = useState(0);
-
+  const [completed, setCompleted] = useState(0);
   useEffect(() => {
     setQuestionChange(true);
     setSelectedAnswer(null);
@@ -42,43 +43,52 @@ function Question({ question, closeConnection, sendAnswer, rightAnswer ,playerAn
 
   function handleAnswerClick(answer) {
     setSelectedAnswer(answer);
-    const endTime = Date.now(); 
-    const timeDifference = Math.floor((endTime - startTimeRef.current) / 1000); 
+    const endTime = Date.now();
+    const timeDifference = Math.floor((endTime - startTimeRef.current) / 1000);
     setTimeToAnswer(timeDifference);
     sendAnswer(answer, timeDifference);
   }
 
-  return (
-    <div>
 
+
+  const renderNewDiv = () => {
+    return (
+      <div className="my-custom-div">New div: {playerAnswer}</div>
+    );
+  };
+
+  return (
+    <div >
       <button onClick={closeConnection} >exit</button>
-      {/* <CountdownTimer
-        seconds={15} // Set the desired timer duration
-        size={80} // Set the desired size
-        strokeBgColor="black" // Set the desired background color
-        strokeColor="lightblue" // Set the desired stroke color
-        strokeWidth={3} // Set the desired stroke width
-        restart={questionChange} // Pass the questionChange state as a prop
-      /> */}
-      <h3 id="question">{question.question}</h3>
-      <div className="answer-grid">
-        {question.incorrect_answers
-          .map((answer, index) => (
-            <button className={selectedAnswer === answer ? 'selected-answer answer-button' : 'answer-button'} 
-              key={index}
-              onClick={(e) => handleAnswerClick(e.target.value)}
-              disabled={selectedAnswer !== null} value={answer}>
-              {answer}
-            </button>
-          ))}
+      <div className='questionPage'>       
+        <CountdownTimer
+          seconds={10} // Set the desired timer duration
+          size={80} // Set the desired size
+          strokeBgColor="black" // Set the desired background color
+          strokeColor="lightblue" // Set the desired stroke color
+          strokeWidth={3} // Set the desired stroke width
+          restart={questionChange} // Pass the questionChange state as a prop
+        />
+        <h3 id="question">{question.question}</h3>
+        <div className="answer-grid">
+          {question.incorrect_answers
+            .map((answer, index) => (
+              <button className={selectedAnswer === answer ? 'selected-answer answer-button' : 'answer-button'}
+                key={index}
+                onClick={(e) => handleAnswerClick(e.target.value)}
+                disabled={selectedAnswer !== null} value={answer}>
+                {answer}
+              </button>
+            ))}
+        </div>
+        <ProgressBar completed={percentage} />
+        <span>{
+          (winnerForQuestion) != null ? <div>{winnerForQuestion == "nobody" ? "nobody answered correctly :(" : (winnerForQuestion + " answered correctly first!!!!")}</div> :
+            (playerAnswer) != null ? <div>{renderNewDiv()}</div> :
+              <></>
+        }</span>
+        
       </div>
-      <span>{
-      (winnerForQuestion)!=null?<div>{winnerForQuestion=="nobody"?"nobody answerd correctly :(":(winnerForQuestion+ " answered correctly first!!!!")}</div>:
-      (playerAnswer)!=null?<div>{playerAnswer} already answered!</div>:
-      <></>
-           
-    
-    }</span>
     </div>
   );
 }
