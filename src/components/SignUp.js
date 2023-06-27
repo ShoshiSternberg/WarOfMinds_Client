@@ -18,12 +18,21 @@ import axios from 'axios';
 
 const defaultTheme = createTheme();
 
-export default function SignUp({ setIsLogged, setForm }) {
+export default function SignUp({ setIsLogged, setForm ,setColorProfile}) {
     const [name, setName] = useState();
     const [password, setPassword] = useState();
     const [email, setEmail] = useState();
     const [address, setAddress] = useState();
 
+    
+    const generateRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
     const handleSubmit = async (event) => {
         event.preventDefault();
         const user = {
@@ -37,17 +46,20 @@ export default function SignUp({ setIsLogged, setForm }) {
             "games": [
             ]
         };
+
         console.log("axios");
         await axios.post(`https://localhost:7203/api/Player`, user)
             .then(res => {
                 console.log(res);
                 console.log(res.data);
                 sessionStorage.setItem('user', JSON.stringify(res.data));
-
+                alert("You have successfully registered");
                 setIsLogged(true);
+                setColorProfile(generateRandomColor());
             })
             .catch(err => {
                 console.log(err);
+                alert("An error occurred, change the name or password and try again");
                 sessionStorage.setItem('user', {});
             })
 

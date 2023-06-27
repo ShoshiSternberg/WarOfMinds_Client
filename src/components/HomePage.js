@@ -7,24 +7,27 @@ const HomePage = () => {
 
   let navigate = useNavigate();
   const enterToGame = () => {
+    if(sessionStorage.user!=undefined&&sessionStorage.user!="")
     navigate('/Game');
+    else
+    alert("You must be logged in to start playing")
   };
 
   return (
     <>
-      <div className="App">
-        {!isLogged && <FormDialog setIsLogged={setIsLogged} /> } {/* Render the FormDialog component when isLogged is false */}
+      <div className="HomePage">
+        {/* {!isLogged && <FormDialog setIsLogged={setIsLogged} /> } Render the FormDialog component when isLogged is false */}
         
-        <div className="content">
-          {isLogged ? (
+        {/* <div className="content"> */}
+          {/* {isLogged ? ( */}
             <>
-              <button onClick={() => setIsLogged(false)}>Logout</button>
-              <button onClick={enterToGame}>Enter the game!</button>
+              
+              <button onClick={enterToGame} className='enterToGameButton'>Enter the game!</button>
             </>
-          ) : (
-            <h2>Please log in or register</h2>
-          )}
-        </div>
+          {/* ) : ( */}
+            
+          {/* )} */}
+        {/* </div> */}
       </div>
     </>
   );

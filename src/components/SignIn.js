@@ -18,24 +18,36 @@ import axios from 'axios';
 
 const defaultTheme = createTheme();
 
-export default function SignIn({ setIsLogged ,setForm}) {
-  const [email,setEmail]=React.useState(null);
-  const [password,setPassword]=React.useState(null);
-  const handleSubmit = async(event) => {
+export default function SignIn({ setIsLogged, setForm ,setColorProfile}) {
+  const [email, setEmail] = React.useState(null);
+  const [password, setPassword] = React.useState(null);
+  
+  const generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+};
+  const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("logging");
     await axios.get(`https://localhost:7203/api/Player/${email}/${password}`)
       .then(res => {
-        console.log(res.data);
-        sessionStorage.setItem('user', JSON.stringify(res.data));
-        setIsLogged(res.data!=null);
+        console.log(res.data);  
+        if(res.data=='')
+        alert("The details do not exist in the system. Fix and try again or register")
+        setIsLogged(res.data != '');        
+        sessionStorage.setItem('user',res.data==''?'':JSON.stringify(res.data));
+        setColorProfile(generateRandomColor());
       })
       .catch(err => {
         console.log(err);
-        sessionStorage.setItem('user', {});
+        alert("your loggin failed. try again")
+        sessionStorage.setItem('user', '');
+        setIsLogged(false);
       });
-
-    
   };
 
   return (

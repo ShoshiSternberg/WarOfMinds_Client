@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     MDBCol,
     MDBContainer,
@@ -18,30 +18,41 @@ import {
 } from 'mdb-react-ui-kit';
 import '../App.css';
 import BackgroundLetterAvatars from './Avatar';
-
+import Avatar from '@mui/material/Avatar';
 import MyHistory from './MyHistory';
+import { deepOrange, deepPurple } from '@mui/material/colors';
 
-const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
-    const [numOfGames,setNumOfGames]=useState(0);
+const ProfilePage = ({ setName, setEmail, setAddress, edit_profile }) => {
+    const [numOfGames, setNumOfGames] = useState(0);
+    const [user, setUser] = useState();
+
+    // useEffect(() => {
+    //   const userData = JSON.parse(sessionStorage.getItem('user'));
+    //   setUser(userData);
+    // });
+ 
+    const generateRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
+    
     return (
         <section style={{ backgroundColor: '#eee', margin: '15px 40px 15px 40px', paddingTop: '0px' }}>
             <MDBContainer className="py-5">
-          
+
                 <MDBRow>
                     <MDBCol lg="4" >
                         <MDBCard className="mb-4 ">
-                            <MDBCardBody className="text-center">
-                                {/* <MDBCardImage
-                                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
-                                    alt="avatar"
-                                    className="rounded-circle"
-                                    style={{ width: '150px' }}
-                                    fluid /> */}
-                                    {/* <BackgroundLetterAvatars MyName={user.playerName}/> */}
-                                <p className="big text-muted mb-1">{user.playerName}</p>
-                                <p className="text-muted mb-4">{user.playerAddress}</p>
+                            <MDBCardBody className="text-center profileImageConainer">
 
-
+                                <Avatar sx={{ width: 130, height: 130, bgcolor: generateRandomColor(), fontSize: "40px" }}>{(JSON.parse(sessionStorage.user).playerName).charAt(0)}</Avatar>
+                                <p className="big text-muted mb-1">{JSON.parse(sessionStorage.user).playerName}</p>
+                                <p className="text-muted mb-4">{JSON.parse(sessionStorage.user).playerAddress}</p>
 
                             </MDBCardBody>
                         </MDBCard>
@@ -49,11 +60,11 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                         <MDBCard className="mb-4">
                             <MDBCardBody className="text-center">
                                 <div className="d-flex justify-content-center rounded-3 p-2 mb-2"
-                                    style={{ backgroundColor: '#efefef', textAlign: "center" }}>                                  
-                                    
+                                    style={{ backgroundColor: '#efefef', textAlign: "center" }}>
+
                                     <div className="px-3">
                                         <p className="small text-muted mb-1">Rating</p>
-                                        <p className="mb-0">{user.eloRating}</p>
+                                        <p className="mb-0">{JSON.parse(sessionStorage.user).eloRating}</p>
                                     </div>
                                     <div className="px-3">
                                         <p className="small text-muted mb-1">Games number</p>
@@ -63,7 +74,7 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                             </MDBCardBody>
                         </MDBCard>
 
-                   
+
                     </MDBCol>
                     <MDBCol lg="8">
                         <MDBCard className="mb-4">
@@ -73,7 +84,7 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                                         <MDBCardText>Full Name</MDBCardText>
                                     </MDBCol>
                                     <MDBCol sm="9">
-                                        <MDBCardText className="text-muted"><input type='text' placeholder={user.playerName} onChange={(e) => { setName(e.target.value) }} className='profileInputEdit' /> </MDBCardText>
+                                        <MDBCardText className="text-muted"><input type='text' placeholder={JSON.parse(sessionStorage.user).playerName} onChange={(e) => { setName(e.target.value) }} className='profileInputEdit' /> </MDBCardText>
                                     </MDBCol>
                                 </MDBRow>
                                 <hr />
@@ -82,7 +93,7 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                                         <MDBCardText>Email</MDBCardText>
                                     </MDBCol>
                                     <MDBCol sm="9">
-                                        <MDBCardText className="text-muted"><input type='email' placeholder={user.playerEmail} onChange={(e) => { setEmail(e.target.value) }} className='profileInputEdit' /></MDBCardText>
+                                        <MDBCardText className="text-muted"><input type='email' placeholder={JSON.parse(sessionStorage.user).playerEmail} onChange={(e) => { setEmail(e.target.value) }} className='profileInputEdit' /></MDBCardText>
                                     </MDBCol>
                                 </MDBRow>
                                 <hr />
@@ -91,7 +102,7 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                                         <MDBCardText>Registration Date</MDBCardText>
                                     </MDBCol>
                                     <MDBCol sm="9">
-                                        <MDBCardText className="text-muted"><input type='text' placeholder={user.dateOfRegistration} className='profileInputEdit' /><MDBIcon far icon="edit mb-5" /></MDBCardText>
+                                        <MDBCardText className="text-muted"><input type='text' placeholder={JSON.parse(sessionStorage.user).dateOfRegistration} className='profileInputEdit' /><MDBIcon far icon="edit mb-5" /></MDBCardText>
                                     </MDBCol>
                                 </MDBRow>
                                 <hr />
@@ -100,12 +111,13 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                                         <MDBCardText>Address</MDBCardText>
                                     </MDBCol>
                                     <MDBCol sm="9">
-                                        <MDBCardText className="text-muted"><input type='text' placeholder={user.playerAddress} onChange={(e) => { setAddress(e.target.value) }} className='profileInputEdit' /></MDBCardText>
+                                        <MDBCardText className="text-muted"><input type='text' placeholder={JSON.parse(sessionStorage.user).playerAddress} onChange={(e) => { setAddress(e.target.value) }} className='profileInputEdit' /></MDBCardText>
                                     </MDBCol>
                                 </MDBRow>
                                 <hr />
 
                             </MDBCardBody>
+                            <button onClick={edit_profile}>edit</button>
                         </MDBCard>
 
                         <MDBRow>
@@ -113,13 +125,13 @@ const ProfilePage = ({ user, setName, setEmail, setAddress }) => {
                                 <MDBCard className="mb-4 mb-md-0">
                                     <MDBCardBody>
                                         <MDBCardText className="mb-4"><span className="text-primary font-italic me-1">Games History</span></MDBCardText>
-                  
-                                        <MyHistory setNumOfGames={setNumOfGames}/>
+
+                                        <MyHistory setNumOfGames={setNumOfGames} />
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBCol>
 
-                         
+
                         </MDBRow>
                     </MDBCol>
                 </MDBRow>

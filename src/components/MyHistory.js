@@ -18,33 +18,30 @@ const MyHistory = ({setNumOfGames}) => {
   }, [])
 
   return (
-    <div>
-      <MDBTable align='middle'>
-        
+    <div style={{ height: '300px', overflow: 'auto' }}>
+    <MDBTable align='middle'>
       <MDBTableHead light className='myHistory'>
-          <tr>
-            <th scope='col'></th>
-            <th scope='col'>subject</th>
-            <th scope='col'>date</th>
-            <th scope='col'>length</th>
-            <th scope='col'>average rating</th>
+        <tr>
+          <th scope='col'></th>
+          <th scope='col'>subject</th>
+          <th scope='col'>date</th>
+          <th scope='col'>length</th>
+          <th scope='col'>average rating</th>
+        </tr>
+      </MDBTableHead>
+      <MDBTableBody className='MyHistoryTable'>
+        {myHistory.map((game) => (
+          <tr key={game.GameID}>
+            <td>{game.GameID}</td>
+            <td>{game.subject}</td>
+            <td>{game.gameDate}</td>
+            <td>{game.gameLength}</td>
+            <td>{game.rating}</td>
           </tr>
-        </MDBTableHead>
-        <MDBTableBody>
-          {
-            myHistory.map((game) => (
-              <tr key={game.GameID}>
-                <td>{game.GameID}</td>
-                <td>{(game.subject).subjectname}</td>
-                <td>{game.gameDate}</td>
-                <td>{game.gameLength}</td>
-                <td>{game.rating}</td>
-              </tr>
-            ))
-          }
-        </MDBTableBody>
-      </MDBTable>
-    </div>
+        ))}
+      </MDBTableBody>
+    </MDBTable>
+  </div>
   );
 }
 

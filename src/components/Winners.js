@@ -1,21 +1,40 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import '../App.css';
 
-const Winners=({winners})=> {
+const TextAnimation = ({ text }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    setIsAnimating(true);
+    const animationTimeout = setTimeout(() => {
+      setIsAnimating(false);
+    }, 2000); // Adjust the duration as needed
+
+    return () => {
+      clearTimeout(animationTimeout);
+    };
+  }, []);
+
   return (
-    <div>
-      <h3>---winners---</h3>
-        {winners
-          .map((index,winner) => (
-            <button 
-              key={index}>
-              {winner}
-            </button>
-          ))
-      }
-    </div>   
+    <div class="container">
 
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h3 class="animate-charcter"> david</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h3 class="animate-charcter"> david</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h3 class="animate-charcter"> david</h3>
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
-export default Winners;
+export default TextAnimation;

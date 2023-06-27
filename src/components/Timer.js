@@ -13,26 +13,35 @@ const CountdownTimer = ({ seconds, size, strokeBgColor, strokeColor, strokeWidth
   };
 
   useEffect(() => {
+    let interval;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setIsPlaying(true);
+      } else {
+        setIsPlaying(false);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     if (isPlaying) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 10);
 
-        if (countdown === 0) {
+        if (countdown <= 0) {
           clearInterval(interval);
           setCountdown(milliseconds);
           setIsPlaying(false);
         }
       }, 10);
-
-      return () => {
-        clearInterval(interval);
-      };
     }
-  }, [countdown, isPlaying, milliseconds]);
 
-  const startTimer = () => {
-    setIsPlaying(true);
-  };
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [countdown, isPlaying, milliseconds]);
 
   const countdownSizeStyles = {
     height: size,
@@ -54,9 +63,7 @@ const CountdownTimer = ({ seconds, size, strokeBgColor, strokeColor, strokeWidth
           opacity: isPlaying ? 0.4 : 1,
         }}
       >
-        <button style={styles.button} onClick={!isPlaying ? startTimer : () => {}}>
-          START
-        </button>
+        {/* Start button */}
       </div>
       <div style={{ ...styles.countdownContainer, ...countdownSizeStyles }}>
         <p style={textStyles}>{secondsRemaining}s</p>
@@ -87,6 +94,7 @@ const CountdownTimer = ({ seconds, size, strokeBgColor, strokeColor, strokeWidth
     </div>
   );
 };
+
 
 const styles = {
   countdownContainer: {

@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CountdownTimer from './Timer';
 import ProgressBar from './progressBar';
+import counter from '../audio/10-seconds-game-countdown-142456.mp3';
+import failure from '../audio/failure-1-89170.mp3';
+import success from '../audio/new-level-142995.mp3';
 
 function Question({ question, closeConnection, sendAnswer, rightAnswer, playerAnswer, winnerForQuestion, percentage }) {
   const [answers, setAnswers] = useState([]);
@@ -9,31 +12,59 @@ function Question({ question, closeConnection, sendAnswer, rightAnswer, playerAn
   const startTimeRef = useRef();
   const [timeToAnswer, setTimeToAnswer] = useState(0);
   const [completed, setCompleted] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(10);
   useEffect(() => {
+    setIsPlaying(true);
     setQuestionChange(true);
     setSelectedAnswer(null);
+    const audio = new Audio(counter);
+    audio.play();
     startTimeRef.current = Date.now(); // Store the current time when the question changes
+    setTimeLeft(10);
+
   }, [question]);
 
   useEffect(() => {
     // Change the color of the right answer when it is received
-    if (selectedAnswer === rightAnswer) {
-      // Update the CSS class or inline style of the button to change its color
-      // For example, you can add a CSS class to the button element:
-      // 1. Create a CSS class to define the desired color
-      // 2. Use the class conditionally based on the selectedAnswer and rightAnswer
-      // Here's an example using a CSS class called 'correct-answer':
-      // Add a CSS class to the button if the selectedAnswer matches the rightAnswer
-      const buttons = document.getElementsByClassName('answer-button');
-      for (let i = 0; i < buttons.length; i++) {
-        const button = buttons[i];
-        if (button.value === rightAnswer) {
-          button.classList.add('correct-answer');
-        }
+    if (selectedAnswer === rightAnswer && rightAnswer != null) {
+      const audio = new Audio(success);
+      audio.play();
+    } else {
+      const audio = new Audio(failure);
+      audio.play();
+    }
+    const buttons = document.getElementsByClassName('answer-button');
+    for (let i = 0; i < buttons.length; i++) {
+      const button = buttons[i];
+      if (button.value === rightAnswer) {
+        button.classList.add('correct-answer');
+        setTimeout(() => {
+          button.classList.remove('correct-answer');
+        }, 5000); // Remove the class after 1 second (adjust the delay as needed)
       }
     }
+
   }, [rightAnswer]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTimeLeft) => prevTimeLeft - 1);
+    }, 1000);
+
+    if (timeLeft === 0) {
+      // Handle the timer reaching 0, if needed
+      document.getElementById("clock").style.border = "solid 5px red";
+      clearInterval(timer);
+    }
+    else {
+      document.getElementById("clock").style.border = "solid 5px white";
+    }
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [timeLeft]);
 
 
   if (!question) {
@@ -49,53 +80,73 @@ function Question({ question, closeConnection, sendAnswer, rightAnswer, playerAn
     sendAnswer(answer, timeDifference);
   }
 
-
-
   const renderNewDiv = () => {
-    return (
-      <div className="my-custom-div">New div: {playerAnswer}</div>
-    );
+    return <div className="my-custom-div">{playerAnswer}</div>;
   };
 
+  const decodeHtmlEntities = (str) => {
+    const element = document.createElement('div');
+    element.innerHTML = str;
+    return element.innerText;
+  };
+
+  const getBorderColor = (index) => {
+    const colors = ['rgb(233, 80, 3)', 'yellow', 'rgb(20, 244, 20)', 'rgb(252, 9, 207)'];
+    return colors[index % colors.length];
+  };
+
+
+
+
   return (
-    <div >
-      <button onClick={closeConnection} >exit</button>
-      <div className='questionPage'>       
-        <CountdownTimer
-          seconds={10} // Set the desired timer duration
-          size={80} // Set the desired size
-          strokeBgColor="black" // Set the desired background color
-          strokeColor="lightblue" // Set the desired stroke color
-          strokeWidth={3} // Set the desired stroke width
-          restart={questionChange} // Pass the questionChange state as a prop
-        />
-        <h3 id="question">{question.question}</h3>
-        <div className="answer-grid">
-          {question.incorrect_answers
-            .map((answer, index) => (
-              <button className={selectedAnswer === answer ? 'selected-answer answer-button' : 'answer-button'}
-                key={index}
-                onClick={(e) => handleAnswerClick(e.target.value)}
-                disabled={selectedAnswer !== null} value={answer}>
-                {answer}
-              </button>
-            ))}
+    <div>
+      
+      <div className="questionPage">
+
+
+        <div id="clock" >
+          <span id="seconds" className="clock-text">{timeLeft}</span>
         </div>
-        <ProgressBar completed={percentage} />
-        <span>{
-          (winnerForQuestion) != null ? <div>{winnerForQuestion == "nobody" ? "nobody answered correctly :(" : (winnerForQuestion + " answered correctly first!!!!")}</div> :
-            (playerAnswer) != null ? <div>{renderNewDiv()}</div> :
-              <></>
-        }</span>
-        
+
+        <h3 id="question">
+          <span id="questionId">{question.questionId+1}</span> {decodeHtmlEntities(question.question)}
+        </h3>
+        <div className="answer-grid">
+          {question.incorrect_answers.map((answer, index) => (
+            <button
+              className={`answer-button ${selectedAnswer === answer ? 'selected-answer' : ''} ${rightAnswer === answer ? 'correct-answer-animation' : ''}`}
+              style={{ borderColor: getBorderColor(index), backgroundColor: selectedAnswer === answer ? getBorderColor(index) : '' }}
+              key={index}
+              onClick={() => handleAnswerClick(answer)}
+              disabled={selectedAnswer !== null}
+              value={answer}
+            >
+              {decodeHtmlEntities(answer)}
+            </button>
+          ))}
+        </div>
+        <div className="ProgressBarContainer">
+          <ProgressBar completed={percentage} />
+        </div>
+        <span >
+          {winnerForQuestion != null ? (
+            <div className='theFastest' >
+              <span id="theFastestTitle">The fastest </span><br />
+              {winnerForQuestion === 'nobody' ? (
+                'nobody :('
+              ) : (
+                winnerForQuestion
+              )}
+            </div>
+          ) : playerAnswer != null ? (
+            <div className="AlreadyAnswered">{renderNewDiv()}</div>
+          ) : (
+            <></>
+          )}
+        </span>
       </div>
     </div>
   );
 }
 
-
-
 export default Question;
-
-
-
